@@ -8,6 +8,8 @@ It communicates with backend services through the API Gateway, which centralizes
 ## 2. API Gateway
 Acts as a single entry point for all frontend requests, simplifying and centralizing client-server interactions.
 Routes incoming requests to the appropriate microservice (Post, Review, or Comment Service) based on the request.
+## 3.OpenFeign
+Synchronized communication between Review Service and Comment Service because users can comment on a review. Also synchronized communication between Post Service and CommentService so that posts can have comments.
 ## 3. Microservices Architecture
 The application is organized into three independent microservices, each handling a specific part of the functionality:
 ### Post Service
