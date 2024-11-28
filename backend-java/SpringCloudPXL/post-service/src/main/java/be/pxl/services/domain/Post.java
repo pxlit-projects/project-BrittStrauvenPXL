@@ -1,9 +1,6 @@
 package be.pxl.services.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -19,8 +16,10 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String title;
+    @Column(columnDefinition = "LONGTEXT")
     private String content;
     private String author;
     private LocalDate creationDate;
+    private boolean isConcept;
 
 }

@@ -1,0 +1,43 @@
+<div class="container mx-auto mt-10 max-w-4xl bg-gray-50 shadow-md rounded-lg p-6">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-gray-800">Post List</h2>
+        <!-- Add New Post Button -->
+        <button
+            class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-300"
+            [routerLink]="['/new-post']">
+            + Add New Post
+        </button>
+    </div>
+
+    <!-- If No Posts -->
+    @if (posts.length === 0) {
+    <div class="text-gray-500 text-center" id="error">
+        No posts available.
+    </div>
+    }
+
+    <!-- Post List -->
+    @for (post of posts; track $index) {
+    <div class="relative bg-white rounded-lg p-4 mb-4 shadow-sm border">
+        <!-- Post Status -->
+        @if (post.isConcept) {
+        <div class="absolute top-2 right-2 bg-green-100 text-green-500 text-xs font-semibold px-3 py-1 rounded-full">
+            Concept
+        </div>
+        } @else {
+        <div class="absolute top-2 right-2 bg-blue-100 text-blue-500 text-xs font-semibold px-3 py-1 rounded-full">
+            Published
+        </div>
+        }
+
+        <!-- Post Content -->
+        <h3 class="text-xl font-semibold text-gray-800">{{ post.title }}</h3>
+        <p class="text-sm text-gray-800 mt-4">Author: {{ post.author }}</p>
+        <button
+            class="absolute bottom-2 right-2 bg-gray-200 text-gray-800 text-xs px-3 py-1 rounded-lg hover:bg-gray-300"
+            [routerLink]="['/post-detail', post.id]">
+            View Details
+        </button>
+    </div>
+    }
+</div>

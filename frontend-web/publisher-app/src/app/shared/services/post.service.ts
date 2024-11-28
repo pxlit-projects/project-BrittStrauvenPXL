@@ -14,4 +14,16 @@ export class PostService {
   createPost(post: Post) {
     return this.http.post<Post>(this.api, post);
   }
+
+  getPosts() {
+    return this.http.get<Post[]>(this.api);
+  }
+
+  editPost(post: Post) {
+    return this.http.put<Post>(this.api + "/" + post.id, post);
+  }
+
+  getPostById(id: number) {
+    return this.http.get<Post>(this.api + "/" + id);
+  }
 }
