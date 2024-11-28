@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { AuthService } from '../shared/services/auth.service';
 import { Router } from '@angular/router';
 import { BrowserModule } from '@angular/platform-browser';
@@ -14,8 +14,8 @@ import { FormsModule } from '@angular/forms';
 export class LoginComponent {
   username: string = '';
   role: string = '';
-
-  constructor(private authService: AuthService, private router: Router) { }
+  authService: AuthService = inject(AuthService);
+  router: Router = inject(Router);
 
   onSubmit(form: any) {
     if (form.valid) {

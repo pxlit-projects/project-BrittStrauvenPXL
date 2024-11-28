@@ -5,6 +5,7 @@
     @if (!isEditMode) {
         <div>
             <h3 class="text-xl font-semibold text-gray-800">{{ post.title }}</h3>
+            <p class="text-gray-500 mt-4">{{ post.creationDate }}</p>
             <p class="text-gray-800 mt-4">{{ post.content }}</p>
             <p class="text-sm text-gray-800 mt-4">Author: {{ post.author }}</p>
             <p>

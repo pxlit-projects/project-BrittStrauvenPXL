@@ -14,7 +14,8 @@ public class PostConverter implements Converter<Post, PostDto> {
                 post.getTitle(),
                 post.getContent(),
                 post.getAuthor(),
-                post.isConcept()
+                post.isConcept(),
+                post.getCreationDate().toString()
         );
     }
 }

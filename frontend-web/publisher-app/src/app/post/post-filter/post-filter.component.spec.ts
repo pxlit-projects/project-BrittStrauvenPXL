@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { EditPostDialogComponent } from './edit-post-dialog.component';
+import { PostFilterComponent } from './post-filter.component';
 
-describe('EditPostDialogComponent', () => {
-  let component: EditPostDialogComponent;
-  let fixture: ComponentFixture<EditPostDialogComponent>;
+describe('PostFilterComponent', () => {
+  let component: PostFilterComponent;
+  let fixture: ComponentFixture<PostFilterComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [EditPostDialogComponent]
+      imports: [PostFilterComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(EditPostDialogComponent);
+    fixture = TestBed.createComponent(PostFilterComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
