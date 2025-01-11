@@ -20,6 +20,7 @@ public class Post {
     private String content;
     private String author;
     private LocalDate creationDate;
-    private boolean isConcept;
+    @Enumerated(EnumType.STRING)
+    private PostStatus status;
 
 }

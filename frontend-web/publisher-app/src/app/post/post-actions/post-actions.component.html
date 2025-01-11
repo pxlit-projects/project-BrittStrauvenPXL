@@ -1,0 +1,8 @@
+<div class="flex space-x-3 mt-6">
+    <button class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md" (click)="onEdit()">
+        Edit
+    </button>
+    <button class="bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-lg shadow-md" [routerLink]="['/new-review', post.post.id]">
+        Review
+    </button>
+</div>

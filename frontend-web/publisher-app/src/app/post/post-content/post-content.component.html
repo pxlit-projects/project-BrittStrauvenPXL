@@ -1,0 +1,19 @@
+<div>
+    <h3 class="text-xl font-semibold text-gray-800">{{ post.post.title }}</h3>
+    <p class="text-gray-500 mt-4">{{ post.post.creationDate }}</p>
+    <p class="text-gray-800 mt-4">{{ post.post.content }}</p>
+    <p class="text-sm text-gray-800 mt-4">Author: {{ post.post.author }}</p>
+    <p>
+        Status:
+        @if (post.post.postStatus === 'CONCEPT') {
+            <span class="text-green-500">Concept</span>
+        } @else if (post.post.postStatus === 'APPROVED') {
+            <span class="text-green-500">Approved</span>
+        } @else if (post.post.postStatus === 'REJECTED') {
+            <span class="text-red-500">Rejected</span>
+        } 
+        @else {
+            <span class="text-blue-500">Published</span>
+        }
+    </p>
+</div>

@@ -4,6 +4,7 @@ import { Post } from '../../shared/models/Post';
 import { PostService } from '../../shared/services/post.service';
 import { AuthService } from '../../shared/services/auth.service';
 import { Router } from '@angular/router';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-new-post',
@@ -23,30 +24,31 @@ export class NewPostComponent {
     content: ['', Validators.required]
   });
 
-  onSubmit() {
-    const newPost: Post = {
-      ...this.postForm.value,
-      author: this.authService.getUser().username,
-      isConcept: false
-    };
-
-    this.postService.createPost(newPost).subscribe(() => {
-      this.postForm.reset();
-    });
-    this.router.navigate(['/posts']);
-  }
+  isFormSubmitted = false;
 
   onSaveAsConcept() {
     const conceptPost: Post = {
       ...this.postForm.value,
       isConcept: true,
       author: this.authService.getUser().username
-    
     };
 
     this.postService.createPost(conceptPost).subscribe(() => {
       this.postForm.reset();
+      this.isFormSubmitted = true;
+      this.router.navigate(['/posts']);
     });
+  }
+
+  goBack() {
     this.router.navigate(['/posts']);
+  }
+
+  // ✅ Implement `canDeactivate` as a method
+  canDeactivate(): boolean | Observable<boolean> {
+    if (this.isFormSubmitted || this.postForm.pristine) {
+      return true;
+    }
+    return confirm('You have unsaved changes. Are you sure you want to leave?');
   }
 }

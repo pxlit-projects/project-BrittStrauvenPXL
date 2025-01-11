@@ -3,8 +3,8 @@ import { PostService } from '../../shared/services/post.service';
 import { Post } from '../../shared/models/Post';
 import { RouterLink } from '@angular/router';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { AuthService } from '../../shared/services/auth.service';
 import { PostFilterComponent } from "../post-filter/post-filter.component";
+import { AuthService } from '../../shared/services/auth.service';
 
 @Component({
   selector: 'app-post-list',
@@ -13,22 +13,24 @@ import { PostFilterComponent } from "../post-filter/post-filter.component";
   templateUrl: './post-list.component.html',
   styleUrl: './post-list.component.css'
 })
+
 export class PostListComponent {
   postService: PostService = inject(PostService);
+  authService : AuthService = inject(AuthService);
   dialog: MatDialog = inject(MatDialog);
-  authService: AuthService = inject(AuthService);
   posts: Post[] = [];
   filteredPosts: Post[] = [];
+  role: string  = "";
 
   ngOnInit() {
     this.fetchPosts();
+    this.role = this.authService.getUser().role;
   }
 
-  fetchPosts() {
-    this.postService.getPosts().subscribe({
+  fetchPosts(filters?: any) {
+    this.postService.getPosts(filters).subscribe({
       next: (posts) => {
-        const user = this.authService.getUser();
-        this.posts = user.role === 'editor' ? posts : posts.filter(post => !post.isConcept);
+        this.posts = posts;
         this.filteredPosts = [...this.posts];
       },
       error: (err) => {
@@ -39,14 +41,9 @@ export class PostListComponent {
       }
     });
   }
-
+  
   applyFilters(criteria: any) {
-    console.log('Applying filters:', criteria); // Debug log
-    this.filteredPosts = this.posts
-      .filter(post => 
-        (!criteria.author || post.author.toLowerCase().includes(criteria.author.toLowerCase())) &&
-        (!criteria.content || post.title.toLowerCase().includes(criteria.content.toLowerCase())) &&
-        (!criteria.date || new Date(post.creationDate).toDateString() === new Date(criteria.date).toDateString())
-      );
+    this.fetchPosts(criteria);
   }
+  
 }
