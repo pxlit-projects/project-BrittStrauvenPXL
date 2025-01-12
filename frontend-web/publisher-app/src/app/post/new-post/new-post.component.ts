@@ -24,7 +24,7 @@ export class NewPostComponent {
     content: ['', Validators.required]
   });
 
-  isFormSubmitted = false;
+  isFormSubmitted : boolean = false;
 
   onSaveAsConcept() {
     const conceptPost: Post = {
@@ -44,7 +44,6 @@ export class NewPostComponent {
     this.router.navigate(['/posts']);
   }
 
-  // ✅ Implement `canDeactivate` as a method
   canDeactivate(): boolean | Observable<boolean> {
     if (this.isFormSubmitted || this.postForm.pristine) {
       return true;

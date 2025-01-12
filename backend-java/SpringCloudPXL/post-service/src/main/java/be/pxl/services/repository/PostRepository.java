@@ -10,7 +10,7 @@ import be.pxl.services.domain.PostStatus;
 public interface PostRepository extends JpaRepository<Post, Long> {
     @Query("SELECT p FROM Post p WHERE " +
             "(:author IS NULL OR LOWER(p.author) LIKE LOWER(CONCAT('%', :author, '%'))) AND " +
-            "(:content IS NULL OR LOWER(p.title) LIKE LOWER(CONCAT('%', :content, '%'))) AND " +
+            "(:content IS NULL OR LOWER(p.content) LIKE LOWER(CONCAT('%', :content, '%'))) AND " +
             "(:date IS NULL OR p.creationDate = :date)")
     List<Post> findFilteredPosts(@Param("author") String author,
                                  @Param("content") String content,
@@ -18,7 +18,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     @Query("SELECT p FROM Post p WHERE p.status = 'PUBLISHED' AND " +
             "(:author IS NULL OR LOWER(p.author) LIKE LOWER(CONCAT('%', :author, '%'))) AND " +
-            "(:content IS NULL OR LOWER(p.title) LIKE LOWER(CONCAT('%', :content, '%'))) AND " +
+            "(:content IS NULL OR LOWER(p.content) LIKE LOWER(CONCAT('%', :content, '%'))) AND " +
             "(:date IS NULL OR p.creationDate = :date)")
     List<Post> findFilteredPublishedPosts(@Param("author") String author,
                                           @Param("content") String content,

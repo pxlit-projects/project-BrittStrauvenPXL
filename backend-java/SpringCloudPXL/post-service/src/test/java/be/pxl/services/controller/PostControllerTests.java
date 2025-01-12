@@ -8,7 +8,9 @@ import be.pxl.services.domain.Post;
 import be.pxl.services.domain.PostStatus;
 import be.pxl.services.repository.PostRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -17,7 +19,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -34,7 +35,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @Testcontainers
 @AutoConfigureMockMvc
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class) // Ensures tests execute in order
 public class PostControllerTests {
 
     @Autowired
@@ -42,8 +42,10 @@ public class PostControllerTests {
 
     @Autowired
     private ObjectMapper objectMapper;
+
     @Mock
     private ReviewClient reviewClient;
+
     @Mock
     private CommentClient commentClient;
 
@@ -60,12 +62,13 @@ public class PostControllerTests {
         registry.add("spring.datasource.password", sqlContainer::getPassword);
     }
 
-    private static Post conceptPost;
-    private static Post publishedPost;
+    private Post conceptPost;
+    private Post publishedPost;
 
-    @BeforeAll
-    static void setUp(@Autowired PostRepository postRepository) {
+    @BeforeEach
+    void setUp() {
         postRepository.deleteAll();
+
         conceptPost = Post.builder()
                 .title("Concept Post")
                 .content("This is a concept post")
@@ -86,17 +89,15 @@ public class PostControllerTests {
     }
 
     @Test
-    @Order(1)
     public void testCreatePost_EditorRole() throws Exception {
         CreatePostRequest request = new CreatePostRequest("New Post", "New Content", "editorUser", true);
         String requestJson = objectMapper.writeValueAsString(request);
 
-        ResultActions result = mockMvc.perform(MockMvcRequestBuilders.post("/api/post")
-                .header("role", "editor")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(requestJson));
-
-        result.andExpect(status().isCreated());
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/post")
+                        .header("role", "editor")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isCreated());
 
         Optional<Post> savedPost = postRepository.findAll().stream()
                 .filter(post -> post.getTitle().equals("New Post"))
@@ -105,7 +106,6 @@ public class PostControllerTests {
     }
 
     @Test
-    @Order(2)
     public void testCreatePost_NonEditorRole() throws Exception {
         CreatePostRequest request = new CreatePostRequest("Unauthorized Post", "Content", "user1", true);
         String requestJson = objectMapper.writeValueAsString(request);
@@ -118,7 +118,6 @@ public class PostControllerTests {
     }
 
     @Test
-    @Order(3)
     public void testGetAllPosts_NonEditorRole() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/post")
                         .header("role", "user"))
@@ -128,28 +127,26 @@ public class PostControllerTests {
     }
 
     @Test
-    @Order(4)
     public void testGetAllPosts_EditorRole() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/post")
                         .header("role", "editor"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(3)) // ✅ Editor should see all posts
+                .andExpect(jsonPath("$.length()").value(2)) // ✅ Editor sees all posts
                 .andExpect(jsonPath("$[0].title").value("Concept Post"))
                 .andExpect(jsonPath("$[1].title").value("Published Post"));
     }
 
     @Test
-    @Order(5)
     public void testGetPostById() throws Exception {
         when(reviewClient.getReviewByPostId(publishedPost.getId())).thenReturn(new ReviewDto(true, "Great post!"));
         when(commentClient.getAllCommentsByPostId(publishedPost.getId())).thenReturn(new ArrayList<>());
+
         mockMvc.perform(MockMvcRequestBuilders.get("/api/post/{id}", publishedPost.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.post.title").value("Published Post"));
     }
 
     @Test
-    @Order(6)
     public void testEditPost_EditorRole() throws Exception {
         CreatePostRequest updateRequest = new CreatePostRequest("Updated Title", "Updated Content", "author1", false);
         String requestJson = objectMapper.writeValueAsString(updateRequest);
@@ -166,7 +163,6 @@ public class PostControllerTests {
     }
 
     @Test
-    @Order(7)
     public void testEditPost_NonEditorRole() throws Exception {
         CreatePostRequest updateRequest = new CreatePostRequest("Illegal Edit", "Should not be allowed", "user1", false);
         String requestJson = objectMapper.writeValueAsString(updateRequest);

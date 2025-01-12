@@ -28,7 +28,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @Testcontainers
 @AutoConfigureMockMvc
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class CommentControllerTests {
 
     @Container
@@ -53,7 +52,6 @@ public class CommentControllerTests {
     private static final String USERNAME = "testUser";
 
     @Test
-    @Order(1)
     public void testCreateComment_Success() throws Exception {
         CommentRequest request = new CommentRequest(1L, "This is a test comment");
 
@@ -67,7 +65,6 @@ public class CommentControllerTests {
     }
 
     @Test
-    @Order(2)
     public void testGetAllCommentsByPostId_Success() throws Exception {
         List<CommentDto> mockComments = Arrays.asList(
                 new CommentDto(1L, 1L, "First Comment","testUser", LocalDate.now()),
@@ -86,7 +83,6 @@ public class CommentControllerTests {
     }
 
     @Test
-    @Order(3)
     public void testUpdateComment_Success() throws Exception {
         CommentRequest updatedRequest = new CommentRequest(1L, "Updated comment content");
 
@@ -100,7 +96,6 @@ public class CommentControllerTests {
     }
 
     @Test
-    @Order(4)
     public void testDeleteComment_Success() throws Exception {
         mockMvc.perform(delete("/api/comment/1")
                         .header("user", USERNAME))

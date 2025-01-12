@@ -6,6 +6,7 @@ import { CommentService } from './comment.service';
 import { AuthService } from './auth.service';
 import { environment } from '../../../environments/environment.development';
 import { PostComment as AppPostComment, PostComment } from '../models/Comment'; // Aliased import
+import { HttpErrorResponse } from '@angular/common/http';
 
 describe('CommentService', () => {
   let service: CommentService;
@@ -73,14 +74,16 @@ describe('CommentService', () => {
         postId: 123,
         content: 'This is a test comment.'
       };
-      const mockError = {
+      const mockErrorResponse = new HttpErrorResponse({
         status: 500,
-        statusText: 'Internal Server Error'
-      };
+        statusText: 'Internal Server Error',
+        error: { message: 'Something went wrong' }
+      });
 
       service.createComment(newComment).subscribe({
-        next: () => fail('Expected an error, but got a success response'),
+        next: () => fail('Expected an error, but got success response'),
         error: (error) => {
+          expect(error).toBeInstanceOf(HttpErrorResponse);
           expect(error.status).toBe(500);
           expect(error.statusText).toBe('Internal Server Error');
         }
@@ -89,7 +92,7 @@ describe('CommentService', () => {
       const req = httpMock.expectOne(`${environment.apiUrl}/comment/api/comment`);
       expect(req.request.method).toBe('POST');
 
-      req.flush({ message: 'Something went wrong' }, mockError);
+      req.flush({ message: 'Something went wrong' }, { status: 500, statusText: 'Internal Server Error' });
     });
   });
 
@@ -131,14 +134,16 @@ describe('CommentService', () => {
         postId: 123,
         content: 'Updated comment content.'
       };
-      const mockError = {
+      const mockErrorResponse = new HttpErrorResponse({
         status: 404,
-        statusText: 'Not Found'
-      };
+        statusText: 'Not Found',
+        error: { message: 'Comment not found' }
+      });
 
       service.updateComment(updatedComment).subscribe({
-        next: () => fail('Expected an error, but got a success response'),
+        next: () => fail('Expected an error, but got success response'),
         error: (error) => {
+          expect(error).toBeInstanceOf(HttpErrorResponse);
           expect(error.status).toBe(404);
           expect(error.statusText).toBe('Not Found');
         }
@@ -147,7 +152,7 @@ describe('CommentService', () => {
       const req = httpMock.expectOne(`${environment.apiUrl}/comment/api/comment/999`);
       expect(req.request.method).toBe('PUT');
 
-      req.flush({ message: 'Comment not found' }, mockError);
+      req.flush({ message: 'Comment not found' }, { status: 404, statusText: 'Not Found' });
     });
   });
 
@@ -169,14 +174,16 @@ describe('CommentService', () => {
 
     it('should handle HTTP errors gracefully', () => {
       const commentId = 999;
-      const mockError = {
+      const mockErrorResponse = new HttpErrorResponse({
         status: 403,
-        statusText: 'Forbidden'
-      };
+        statusText: 'Forbidden',
+        error: { message: 'Forbidden' }
+      });
 
       service.deleteComment(commentId).subscribe({
-        next: () => fail('Expected an error, but got a success response'),
+        next: () => fail('Expected an error, but got success response'),
         error: (error) => {
+          expect(error).toBeInstanceOf(HttpErrorResponse);
           expect(error.status).toBe(403);
           expect(error.statusText).toBe('Forbidden');
         }
@@ -185,7 +192,7 @@ describe('CommentService', () => {
       const req = httpMock.expectOne(`${environment.apiUrl}/comment/api/comment/999`);
       expect(req.request.method).toBe('DELETE');
 
-      req.flush({ message: 'Forbidden' }, mockError);
+      req.flush({ message: 'Forbidden' }, { status: 403, statusText: 'Forbidden' });
     });
   });
 });

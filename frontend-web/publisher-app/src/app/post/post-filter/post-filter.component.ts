@@ -14,7 +14,7 @@ export class PostFilterComponent {
   filterCriteria = {
     author: '',
     content: '',
-    date: '' // Date filter
+    date: ''
   };
 
   onFilterChange() {

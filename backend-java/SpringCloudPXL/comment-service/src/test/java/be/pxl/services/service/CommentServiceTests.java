@@ -4,30 +4,27 @@ import be.pxl.services.api.dto.CommentDto;
 import be.pxl.services.api.request.CommentRequest;
 import be.pxl.services.domain.Comment;
 import be.pxl.services.repository.CommentRepository;
-import be.pxl.services.service.converter.CommentConverter;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import java.time.LocalDate;
+
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Testcontainers
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class CommentServiceTests {
 
     @Container
     private static final MySQLContainer<?> sqlContainer = new MySQLContainer<>("mysql:8.0.36");
+
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {
         registry.add("spring.datasource.url", sqlContainer::getJdbcUrl);
@@ -43,43 +40,41 @@ public class CommentServiceTests {
 
     private static final String USERNAME = "testUser";
     private static final String OTHER_USER = "otherUser";
-    private static Long commentId;
 
-    @TestConfiguration
-    static class TestConfig {
-        @Bean
-        public CommentService commentService(CommentRepository commentRepository, CommentConverter commentConverter) {
-            return new CommentService(commentRepository, commentConverter);
-        }
+    @BeforeEach
+    void setUp() {
+        commentRepository.deleteAll(); // Ensures a fresh database before each test
     }
 
     @Test
-    @Order(1)
     public void testCreateNewComment_Success() {
         CommentRequest request = new CommentRequest(1L, "This is a test comment");
-
         commentService.createNewComment(request, USERNAME);
 
         List<Comment> savedComments = commentRepository.findByPostId(1L);
         assertFalse(savedComments.isEmpty());
         assertEquals("This is a test comment", savedComments.get(0).getContent());
-
-        commentId = savedComments.get(0).getId();
     }
 
     @Test
-    @Order(2)
     public void testGetAllCommentsByPostId_Success() {
+        CommentRequest request = new CommentRequest(1L, "First comment");
+        commentService.createNewComment(request, USERNAME);
+
         List<CommentDto> comments = commentService.getAllCommentsByPostId(1L);
         assertNotNull(comments);
         assertEquals(1, comments.size());
+        assertEquals("First comment", comments.get(0).content());
     }
 
     @Test
-    @Order(3)
     public void testUpdateComment_Success() {
-        CommentRequest updatedRequest = new CommentRequest(1L, "Updated comment content");
+        CommentRequest request = new CommentRequest(1L, "Original Comment");
+        commentService.createNewComment(request, USERNAME);
 
+        Long commentId = commentRepository.findByPostId(1L).get(0).getId();
+
+        CommentRequest updatedRequest = new CommentRequest(1L, "Updated comment content");
         commentService.putComment(commentId, updatedRequest, USERNAME);
 
         Comment updatedComment = commentRepository.findById(commentId).orElseThrow();
@@ -87,8 +82,12 @@ public class CommentServiceTests {
     }
 
     @Test
-    @Order(4)
     public void testUpdateComment_FailsForUnauthorizedUser() {
+        CommentRequest request = new CommentRequest(1L, "Original Comment");
+        commentService.createNewComment(request, USERNAME);
+
+        Long commentId = commentRepository.findByPostId(1L).get(0).getId();
+
         CommentRequest updatedRequest = new CommentRequest(1L, "Another update");
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
@@ -99,23 +98,26 @@ public class CommentServiceTests {
     }
 
     @Test
-    @Order(5)
     public void testDeleteComment_Success() {
+        CommentRequest request = new CommentRequest(1L, "Comment to delete");
+        commentService.createNewComment(request, USERNAME);
+
+        Long commentId = commentRepository.findByPostId(1L).get(0).getId();
+
         commentService.deleteComment(commentId, USERNAME);
 
         assertTrue(commentRepository.findById(commentId).isEmpty());
     }
 
     @Test
-    @Order(6)
     public void testDeleteComment_FailsForUnauthorizedUser() {
         CommentRequest request = new CommentRequest(1L, "This will be deleted");
         commentService.createNewComment(request, USERNAME);
 
-        Long newCommentId = commentRepository.findByPostId(1L).get(0).getId();
+        Long commentId = commentRepository.findByPostId(1L).get(0).getId();
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            commentService.deleteComment(newCommentId, OTHER_USER);
+            commentService.deleteComment(commentId, OTHER_USER);
         });
 
         assertEquals("This comment is not yours", exception.getMessage());

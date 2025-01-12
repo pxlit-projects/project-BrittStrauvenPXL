@@ -62,6 +62,7 @@ export class PostDetailComponent implements OnInit {
         title: [post.post.title, Validators.required],
         content: [post.post.content, Validators.required],
         author: [{ value: post.post.author, disabled: true }],
+        postStatus: [{ value: post.post.postStatus, disabled: true }],
       });
     });
   }

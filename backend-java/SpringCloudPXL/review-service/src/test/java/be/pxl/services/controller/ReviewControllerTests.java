@@ -26,7 +26,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @Testcontainers
 @AutoConfigureMockMvc
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class ReviewControllerTests {
 
     @Container
@@ -55,7 +54,6 @@ public class ReviewControllerTests {
     }
 
     @Test
-    @Order(1)
     public void testCreateReview_Success() throws Exception {
         CreateNewReviewRequest reviewRequest = new CreateNewReviewRequest(POST_ID, true, "Looks good!");
 
@@ -75,7 +73,6 @@ public class ReviewControllerTests {
     }
 
     @Test
-    @Order(2)
     public void testCreateReview_Forbidden() throws Exception {
         CreateNewReviewRequest reviewRequest = new CreateNewReviewRequest(POST_ID, false, "Needs improvement");
 
@@ -89,7 +86,6 @@ public class ReviewControllerTests {
     }
 
     @Test
-    @Order(3)
     public void testGetLatestReviewByPostId_Success() throws Exception {
         ReviewDto mockReview = new ReviewDto(true, "Great post!");
 
@@ -104,7 +100,6 @@ public class ReviewControllerTests {
     }
 
     @Test
-    @Order(4)
     public void testGetLatestReviewByPostId_NotFound() throws Exception {
         when(reviewService.getLatestReviewByPostId(POST_ID)).thenReturn(null);
 

@@ -1,1 +1,41 @@
-# This file will contain a script in orde to start up the system (all microservices) 
+version: "3.3"
+services:
+  front-end:
+        container_name: front-end
+        build:
+            context: ./frontend-web/publisher-app
+            dockerfile: Dockerfile
+        ports:
+        - "4200:80"
+  postservice_db:
+    image: mysql:latest
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: 'postservice_db'
+      MYSQL_USER: 'user'
+      MYSQL_PASSWORD: 'password'
+      MYSQL_ROOT_PASSWORD: 'admin'
+  reviewservice_db:
+    image: mysql:latest
+    ports:
+      - "3309:3306"
+    environment:
+      MYSQL_DATABASE: 'reviewservice_db'
+      MYSQL_USER: 'user'
+      MYSQL_PASSWORD: 'password'
+      MYSQL_ROOT_PASSWORD: 'admin'
+  commentserice_db:
+    image: mysql:latest
+    ports:
+      - "3308:3306"
+    environment:
+      MYSQL_DATABASE: 'commentservice_db'
+      MYSQL_USER: 'user'
+      MYSQL_PASSWORD: 'password'
+      MYSQL_ROOT_PASSWORD: 'admin'
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    ports:
+      - "15672:15672"
+      - "5672:5672"

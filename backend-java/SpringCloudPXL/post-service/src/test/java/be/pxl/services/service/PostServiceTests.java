@@ -1,6 +1,5 @@
 package be.pxl.services.service;
 
-import be.pxl.services.api.dto.CommentDto;
 import be.pxl.services.api.dto.PostDetailDto;
 import be.pxl.services.api.dto.PostDto;
 import be.pxl.services.api.dto.ReviewDto;
@@ -16,20 +15,15 @@ import be.pxl.services.services.PostService;
 import be.pxl.services.services.converter.PostConverter;
 import org.junit.jupiter.api.*;
 import org.mockito.ArgumentCaptor;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.time.LocalDate;
 import java.util.Collections;
@@ -38,12 +32,10 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @Testcontainers
 @AutoConfigureMockMvc
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class PostServiceTests {
 
     @Container
@@ -80,6 +72,7 @@ public class PostServiceTests {
 
     @BeforeEach
     void setUp() {
+        postRepository.deleteAll();
         testPost = new Post();
         testPost.setId(1L);
         testPost.setTitle("Test Post");
@@ -90,7 +83,6 @@ public class PostServiceTests {
     }
 
     @Test
-    @Order(1)
     public void testCreateNewPost() {
         CreatePostRequest request = new CreatePostRequest("New Post", "New Content", "New Author", true);
         postService.createNewPost(request);
@@ -104,7 +96,6 @@ public class PostServiceTests {
     }
 
     @Test
-    @Order(2)
     public void testEditPost() {
         when(postRepository.findById(1L)).thenReturn(Optional.of(testPost));
 
@@ -118,7 +109,6 @@ public class PostServiceTests {
     }
 
     @Test
-    @Order(3)
     public void testGetPostById() {
         when(postRepository.findById(1L)).thenReturn(Optional.of(testPost));
         when(postConverter.convert(testPost)).thenReturn(new PostDto(1L, "Test Post", "Test Content", "Author", PostStatus.CONCEPT, "2025-01-10"));
@@ -133,7 +123,6 @@ public class PostServiceTests {
     }
 
     @Test
-    @Order(4)
     public void testGetFilteredPosts() {
         when(postRepository.findFilteredPosts(null, null, null)).thenReturn(List.of(testPost));
         when(postConverter.convert(testPost)).thenReturn(new PostDto(1L, "Test Post", "Test Content", "Author", PostStatus.CONCEPT, "2025-01-10"));
@@ -145,7 +134,6 @@ public class PostServiceTests {
     }
 
     @Test
-    @Order(5)
     public void testReceiveReview_Approved() {
         Review review = new Review();
         review.setPostId(1L);
@@ -162,7 +150,6 @@ public class PostServiceTests {
     }
 
     @Test
-    @Order(6)
     public void testReceiveReview_Rejected() {
         Review review = new Review();
         review.setPostId(1L);

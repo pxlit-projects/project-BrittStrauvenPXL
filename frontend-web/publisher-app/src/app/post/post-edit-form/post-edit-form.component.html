@@ -20,11 +20,13 @@
             Save as Concept
         </button>
 
+        @if (postForm.get("postStatus")?.value === "APPROVED") {
         <button type="button" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg"
             [disabled]="postForm.get('postStatus')?.value === 'REJECTED'"
             (click)="saveChanges(false)">
             Publish
         </button>
+    }
 
         <button type="button" class="px-4 py-2 bg-gray-300 rounded-lg" (click)="cancelEdit()">
             Cancel

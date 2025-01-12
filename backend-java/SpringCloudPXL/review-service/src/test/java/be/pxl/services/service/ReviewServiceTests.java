@@ -4,18 +4,14 @@ import be.pxl.services.api.dto.ReviewDto;
 import be.pxl.services.api.request.CreateNewReviewRequest;
 import be.pxl.services.domain.Review;
 import be.pxl.services.repository.ReviewRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.*;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -28,8 +24,6 @@ import static org.mockito.Mockito.*;
 
 @SpringBootTest
 @Testcontainers
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE) // Use real DB
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class) // Ensure tests run in order
 public class ReviewServiceTests {
 
     @Container
@@ -56,7 +50,6 @@ public class ReviewServiceTests {
     }
 
     @Test
-    @Order(1)
     public void testCreateNewReviewRequest_Success() {
         CreateNewReviewRequest request = new CreateNewReviewRequest(1L, true, "Well written!");
 
@@ -73,7 +66,6 @@ public class ReviewServiceTests {
     }
 
     @Test
-    @Order(2)
     public void testGetLatestReviewByPostId_Success() {
         Review review = new Review();
         review.setPostId(2L);
@@ -91,7 +83,6 @@ public class ReviewServiceTests {
     }
 
     @Test
-    @Order(3)
     public void testGetLatestReviewByPostId_NotFound() {
         ReviewDto latestReview = reviewService.getLatestReviewByPostId(99L);
         assertThat(latestReview).isNull();

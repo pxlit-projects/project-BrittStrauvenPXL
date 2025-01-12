@@ -94,7 +94,8 @@ describe('PostDetailComponent', () => {
     component.postForm.setValue({
       title: 'Updated Title',
       content: 'Updated Content',
-      author: 'Author'
+      author: 'Author',
+      postStatus: 'PUBLISHED'
     });
 
     mockPostService.editPost.and.returnValue(
@@ -154,7 +155,7 @@ describe('PostDetailComponent', () => {
   });
 
   it('should not call editPost if postForm is invalid', () => {
-    component.postForm.setValue({ title: '', content: '', author: 'Author' });
+    component.postForm.setValue({ title: '', content: '', author: 'Author', postStatus: 'PUBLISHED' });
 
     component.saveChanges(true);
     expect(mockPostService.editPost).not.toHaveBeenCalled();
@@ -164,7 +165,8 @@ describe('PostDetailComponent', () => {
     component.postForm.setValue({
       title: 'Another Title',
       content: 'Another Content',
-      author: 'Author'
+      author: 'Author',
+      postStatus: 'PUBLISHED'
     });
 
     mockPostService.editPost.and.returnValue(of({

@@ -94,7 +94,4 @@ describe('NewPostComponent', () => {
     expect(mockRouter.navigate).toHaveBeenCalledWith(['/posts']);
   });
 
-
-
-
 });
