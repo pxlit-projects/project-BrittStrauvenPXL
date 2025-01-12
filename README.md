@@ -14,6 +14,7 @@ Each folder contains its own specific `.gitignore` file.
 **:warning: complete these files asap, so you don't litter your repository with binary build artifacts!**
 
 ## How to setup and run this application
+Run npm install and ng build in angular project.
 Run docker compose in root directory to start frontend databases and RabbitMq
 Start microservices in backend manually
 Start microservices in this order:
