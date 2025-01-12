@@ -5,6 +5,8 @@ import be.pxl.services.api.request.CommentRequest;
 import be.pxl.services.domain.Comment;
 import be.pxl.services.repository.CommentRepository;
 import be.pxl.services.service.converter.CommentConverter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -14,6 +16,7 @@ import java.util.List;
 public class CommentService {
     private final CommentRepository commentRepository;
     private final CommentConverter commentConverter;
+    private static final Logger logger = LoggerFactory.getLogger(CommentService.class);
 
     public CommentService(CommentRepository commentRepository, CommentConverter commentConverter) {
         this.commentRepository = commentRepository;
@@ -43,6 +46,8 @@ public class CommentService {
         if (commentRepository.findByIdAndCommenter(id, user).isEmpty()) {
             throw new IllegalArgumentException("This comment is not yours");
         }
+
+        logger.info("Comment with id {} deleted", id);
         commentRepository.deleteById(id);
     }
 
@@ -55,6 +60,7 @@ public class CommentService {
         }
         Comment comment = commentRepository.findById(id).orElseThrow();
         comment.setContent(commentRequest.content());
+        logger.info("Comment with id {} updated", id);
         commentRepository.save(comment);
     }
 
